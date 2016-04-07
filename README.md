@@ -7,4 +7,7 @@ http://www.sciencedirect.com/science/article/pii/S0965174815000144
 ##This program will be availabe later, and under devlopment.
 Currently, I can only coding in python. Luckily, I've alreadly have a program works pretty good, now I need to make it easier to use, and runs faster.
 
+##Name MCuffNovo
+This name is from MAKER, Cufflinks and de novo. I guess it is really hard to have a very attractive name. Well, let it be.
+
 ##Let's wait and see what will happen later on.

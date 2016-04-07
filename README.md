@@ -1,4 +1,4 @@
-# MCuNovoGeneSelector
+# MCuNovo
 Select best protein codeing genes  from models Generated from MAKER2, Cufflinks and any de novo assembling programs. Previously we published a paper describing how it works. In that paper, we call it MCOT.
  
 Cao, X.; Jiang, H. Integrated Modeling of Protein-Coding Genes in the Manduca Sexta Genome Using RNA-Seq Data from the Biochemical Model Insect. Insect Biochemistry and Molecular Biology 2015, 62, 210.

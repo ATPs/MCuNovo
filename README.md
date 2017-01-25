@@ -7,6 +7,11 @@ http://www.sciencedirect.com/science/article/pii/S0965174815000144
 ##This program will be availabe later, and is under devlopment.
 Currently, I can only write code in python. Luckily, I've alreadly had a program works pretty good, now I need to make it easier to use, and runs faster.
 
+##Download MCuNono
+Just click the "clone or download" button, and click "Download ZIP".
+Or, clik this link directly.
+https://github.com/ATPs/MCuNovo/archive/master.zip
+
 ##Name MCuffNovo
 This name is from MAKER, Cufflinks and de novo. I guess it is really hard to have a very attractive name. Well, let it be.
 

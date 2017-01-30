@@ -12,7 +12,7 @@ Just click the "clone or download" button, and click "Download ZIP".
 Or, clik this link directly.
 https://github.com/ATPs/MCuNovo/archive/master.zip
 
-##Name MCuffNovo
+##Name MCuNovo
 This name is from MAKER, Cufflinks and de novo.
 
 ##Let's wait and see what will happen later on.

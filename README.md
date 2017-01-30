@@ -13,6 +13,6 @@ Or, clik this link directly.
 https://github.com/ATPs/MCuNovo/archive/master.zip
 
 ##Name MCuffNovo
-This name is from MAKER, Cufflinks and de novo. I guess it is really hard to have a very attractive name. Well, let it be.
+This name is from MAKER, Cufflinks and de novo.
 
 ##Let's wait and see what will happen later on.

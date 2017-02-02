@@ -287,6 +287,7 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
                                     break
     
     print(time.time()-time1)
+    print('total removed sequence number is')
     print(len(toremove))
     nonredunfasta =[]
     for i in range(len(myfasta)):
@@ -306,7 +307,7 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
                            uniqueNoneWithin_d1=True,
                            uniqueNoneWithin_d2=True,
                            coverage=0.7, min_length=200,
-                           f_protein2gene = None,
+                           f_protein2gene = None, forceNewName = False,
                            f_outfolder=""):
     """
     the main function.
@@ -609,28 +610,59 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
     mcotpepsUNnames=[]
     if f_protein2gene is None:
         for num in len(mcotpepsUNinfo):
-            mcotpepsUNnames[num].append("MCD%05d"%(num+1))
+            mcotpepsUNnames[num].append("MCD%07d"%(num+1))
     else:
-        dicPep2Gene ={}
+        dicPep2Gene ={}#store pep2gene information from file
         genelist = open(f_protein2gene).readlines()
         for ele in genelist:
-            dicPep2Gene[ele.split()[0]] = ele.split()[1]
-        dicGene2name ={}
-        for ele in dicPep2Gene:
-            geneid = dicPep2Gene[ele]
-            dicGene2name[geneid] =0
-        genenumbers = len(dicGene2name)
+            if '\t' in ele:
+                dicPep2Gene[ele.split()[0]] = ele.split()[1]
+#        if not forceNewName:
+#            dicGene2name ={}
+#            for ele in dicPep2Gene:
+#                geneid = dicPep2Gene[ele]
+#                dicGene2name[geneid] =0
+#            genenumbers = len(dicGene2name)
+#            for num in range(len(mcotpepsUNinfo)):
+#                ele_ori = mcotpepsUNinfo[num][0]
+#                if ele_ori in dicPep2Gene:
+#                    geneid = dicPep2Gene[ele_ori]
+#                    if geneid in dicGene2name:
+#                        dicGene2name[geneid] += 1
+#                    geneid =geneid+"."+str(dicGene2name[geneid])
+#                    mcotpepsUNnames.append(geneid)
+#                else:
+#                    mcotpepsUNnames.append("MCD%07d"%(genenumbers+1))
+#                    genenumbers+=1
+#        else:
+        dicGene2pepInMcot = {}#geneid as key, list of mcot_ori as element
         for num in range(len(mcotpepsUNinfo)):
             ele_ori = mcotpepsUNinfo[num][0]
             if ele_ori in dicPep2Gene:
                 geneid = dicPep2Gene[ele_ori]
-                if geneid in dicGene2name:
-                    dicGene2name[geneid] += 1
-                geneid =geneid+"."+str(dicGene2name[geneid])
-                mcotpepsUNnames.append(geneid)
+                if geneid not in dicGene2pepInMcot:
+                    dicGene2pepInMcot[geneid] = []
+                dicGene2pepInMcot[geneid].append(ele_ori)
+        dicMCOTpep2name = {}#gemerate name for 
+        for n, ele in enumerate(dicGene2pepInMcot.items()):
+            elekey, elevalue = ele
+            for m,c in enumerate(elevalue):
+                if forceNewName:
+                    if len(elevalue) >1:
+                        dicMCOTpep2name[c] = "MCD%07d.%d"%(n+1,m+1)
+                    else:
+                        dicMCOTpep2name[c] = "MCD%07d.0"%(n+1)
+                else:
+                    dicMCOTpep2name[c] = elekey+'.'+str(m+1)
+        for num in range(len(mcotpepsUNinfo)):
+            ele_ori = mcotpepsUNinfo[num][0]
+            if ele_ori in dicMCOTpep2name:
+                mcotpepsUNnames.append(dicMCOTpep2name[ele_ori])
             else:
-                mcotpepsUNnames.append("MCD%05d"%(genenumbers+1))
-                genenumbers+=1
+                n += 1
+                mcotpepsUNnames.append("MCD%07d.0"%(n+1))
+            
+            
     #save the file of peptides.
     fout_mcot = open(f_outfolder+"MCDpeptides.txt","w")
     to_write =[]

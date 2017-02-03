@@ -681,7 +681,7 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
             
             
     
-    ##gene number determine function.
+
     
 
 

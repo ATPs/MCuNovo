@@ -18,4 +18,12 @@ https://github.com/ATPs/MCuNovo/raw/master/MCuNovoGeneSelector1.0.zip
 ## Name MCuNovo
 This name is from MAKER, Cufflinks and de novo.
 
-## Let's wait and see what will happen later on.
+## Nov. 2018, MCuNovo paper is published.
+Cao X., Jiang H. (2019) Integrated Modeling of Structural Genes Using MCuNovo. In: Brown S., Pfrender M. (eds) Insect Genomics. Methods in Molecular Biology, vol 1858. Humana Press, New York, NY
+https://link.springer.com/protocol/10.1007%2F978-1-4939-8775-7_5
+
+Leave any comments here in github. If you are interested in using MCuNovo, I will be glad to provide help. If you have any thoughts or special needs, I can help providing a solution.
+
+MCuNovo is developed for Manduca sexta genome project. It sees only a species will have similar amount of research performed. But in the future, there might be some changes. I can improve the program, if there is such need.
+
+Best. :)

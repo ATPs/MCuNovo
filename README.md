@@ -24,6 +24,8 @@ https://link.springer.com/protocol/10.1007%2F978-1-4939-8775-7_5
 
 Leave any comments here in github. If you are interested in using MCuNovo, I will be glad to provide help. If you have any thoughts or special needs, I would like to provide solutions if possible.
 
-MCuNovo is developed for Manduca sexta genome project. It sees only a species will have similar amount of research performed. But in the future, there might be some changes. I can improve the program, if there is such need.
+MCuNovo is developed for Manduca sexta genome project. It also works for species with similar sequencing data. 
+I've already improved some parts, like use Muscle instead of blastp to do protein sequence comparisons, but I haven't include that in the main program.
+I can improve the program, if there is such need.
 
 Best. :)

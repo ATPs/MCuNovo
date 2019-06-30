@@ -13,7 +13,7 @@ Or, clik this link directly.
 https://github.com/ATPs/MCuNovo/archive/master.zip
 
 Download version 1.0 described in the paper from this link.
-https://github.com/ATPs/MCuNovo/raw/master/MCuNovoGeneSelector1.0.zip
+https://github.com/ATPs/MCuNovo/releases/tag/v1.0
 
 ## Name MCuNovo
 This name is from MAKER, Cufflinks and de novo.
@@ -29,3 +29,6 @@ I've already improved some parts, like use Muscle instead of blastp to do protei
 I can improve the program, if there is such need.
 
 Best. :)
+
+
+## I am trying to update the program so that it is easier to use. It will work on Linux

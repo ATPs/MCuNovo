@@ -12,8 +12,6 @@ from Bio import SeqIO
 import io
 from collections import Counter
 import time
-import os
-import pandas as pd
 import re
 
 
@@ -23,7 +21,6 @@ def openfile2lsFasta(filename,fmt = "fasta", removeStar = True):
     """
     given a file name, return a list of fasta in SeqIO format
     """
-    from Bio import SeqIO
     l = list(SeqIO.parse(open(filename),fmt))
     if removeStar:
         for s in l:

@@ -105,7 +105,7 @@ def getProtein2geneMaker(f_maker):
     return df
 
 description = '''
-extract and save protein-to-gene information from files
+extract and save protein-transcript-gene information from files
 return a dataframe with three columns: protein, transcript, and gene
 and write a file if --out is provided
 '''
@@ -133,7 +133,7 @@ one or more protein file similar to maker.
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-c','--cufflinks',nargs = 2, default = None, help = des_cuff)
     parser.add_argument('-d','--denovo',nargs = '+', default = None, help = des_denovo)
     parser.add_argument('-m','--maker', nargs = '+', default = None, help = des_maker)

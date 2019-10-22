@@ -56,6 +56,9 @@ def getSeqLen(seq_ids, f_seq, remove_star = True):
     '''
     all_ids = set(seq_ids)
     dc_seqlen = {}
+    if f_seq.endswith('.gz'):
+        import gzip
+        f_seq = gzip.open(f_seq,'rt')
     for s in SeqIO.parse(f_seq, 'fasta'):
         if s.id in all_ids:
             seq = str(s.seq)
@@ -69,9 +72,9 @@ def getSeqLen(seq_ids, f_seq, remove_star = True):
     return dc_seqlen
 
 
-f_query = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190622Rhyzopertha_dominica\Rdo_Scaffolds.all.maker.proteins.fasta"
-f_subject = r"D:\species\uniprot\arthropoda\uniprotkb_arthropodaclean"
-f_blast6 = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Maker2U"
+#f_query = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190622Rhyzopertha_dominica\Rdo_Scaffolds.all.maker.proteins.fasta"
+#f_subject = r"D:\species\uniprot\arthropoda\uniprotkb_arthropodaclean"
+#f_blast6 = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Maker2U"
 
 
 def parseBlast6(f_blast6, f_query, f_subject, min_identity=90, outfile=None):

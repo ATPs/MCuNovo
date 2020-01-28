@@ -137,13 +137,6 @@ def file_EditedBlast6_to_best_match(f_blast6,f_query=None,f_subject=None,outputf
     else:
         return ls_bestmatch
 
-#folderC = "F:\\Insects\\Anopheles_gambiae\\MCOT2\\Blast\\"
-#f_blast6 = folderC + "C2O.txt"
-#f_query = "F:\\Insects\\Anopheles_gambiae\\Assemblies\\AgCufflinks20160310.fa.transdecoder.pepnonredun"
-#f_subject = "F:\\Insects\\Anopheles_gambiae\\Anopheles-gambiae-PEST_PEPTIDES_AgamP4.3.fa"
-#ls_c2o=file_EditedBlast6_to_best_match(f_blast6=f_blast6,f_query=f_query,f_subject=f_subject,outputfile="C2O.txt",min_identity=95)
-
-
 def openfile2lsFasta(filename,fmt = "fasta"):
     """
     given a file name, return a list of fasta in SeqIO format
@@ -229,13 +222,7 @@ def errorMatch(seq1, seq2, errors=2):
                 return True
     return False
 
-#errorMatch("ABCDEFG","ACCDEF")
-#errorMatch("AB","ACCDGFF")
-#errorMatch("BBCDEFG","ACCDEFG",1)
-#errorMatch("ACCDEEGH","ABCDACCDEFGH",1)
 
-        
-    
 def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     """
     myfasta is a list of SeqIO elements
@@ -296,7 +283,7 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     return nonredunfasta
 
 
-    
+
 def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep, 
                            f_blast_m2c, f_blast_c2m, 
                            f_blast_m2d1, f_blast_d1_2m, f_blast_m2d2, f_blast_d2_2m,
@@ -360,7 +347,7 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
         dcpep_genomebased[ele] = dcpep_m[ele]
     for ele in dcpep_c:
         dcpep_genomebased[ele] = dcpep_c[ele]
-    print("find maker ids do not have good match or have no mathc in cufflinks. time used %.0f"%(time3-time2))
+    print("find maker ids do not have good match or have no match in cufflinks. time used %.0f"%(time3-time2))
     print("number maker_unique peptides is %d" %(len(mcot_makerKeep)))
     print("number of genome based peptides is %d\n"%(len(dcpep_genomebased)))
     
@@ -609,7 +596,7 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
     ##assign gene numbers to each of these transcripts.
     mcotpepsUNnames=[]
     if f_protein2gene is None:
-        for num in len(mcotpepsUNinfo):
+        for num in range(len(mcotpepsUNinfo)):
             mcotpepsUNnames[num].append("MCD%07d"%(num+1))
     else:
         dicPep2Gene ={}#store pep2gene information from file
@@ -678,40 +665,6 @@ def MCuNovoGeneSelectorPep(f_makerPep,f_cuffpep, f_denovo1pep, f_denovo2pep,
     print("MCuNovo output:")
     print("MCD gene name; MCD length; oriID, oriLen;finalID,finalLen;")
     print("Maker(ID,len,ML);Cuff(ID,len,ML);denovo1(ID,len,ML);denovo2(ID,len,ML);uniprot(ID,len,ML,description)")
-            
-            
-    
-
-    
 
 
-#folder = "F:\\Insects\\Anopheles_gambiae\\"
-#folderA = folder +"Assemblies\\"
-#folderC = "F:\\Insects\\Anopheles_gambiae\\MCOT2\\Blast\\"
-#f_makerPep=folder + "Anopheles-gambiae-PEST_PEPTIDES_AgamP4.3.fa"
-#f_cuffpep = folderA + "AgCufflinks20160310.fa.transdecoder.pepnonredun"
-#f_denovo1pep = "F:\\Insects\\Anopheles_gambiae\\TrinityNew\\TrinityConbined\\20160406TrinityCombined98.fa.transdecoder.pepNoWithin"
-#f_denovo2pep= folderA + "20160314BridgerAll.faUN"
-#f_blast_m2c = folderC + "O2C.txt"
-#f_blast_c2m = folderC + "C2O.txt"
-#f_blast_m2d1 = folderC + "O2T.txt"
-#f_blast_d1_2m = folderC + "T2O.txt"
-#f_blast_m2d2 = folderC + "O2B.txt"
-#f_blast_d2_2m = folderC + "B2O.txt"
-#f_blast_c2d1 = folderC + "C2T.txt"
-#f_blast_d1_2c = folderC + "T2C.txt"
-#f_blast_c2d2 = folderC + "C2B.txt"
-#f_blast_d2_2c = folderC + "B2C.txt"
-#f_blast_m2u = folderC + "O2A.txt"
-#f_blast_c2u = folderC + "C2A.txt"
-#f_blast_d1_2u = folderC + "T2A.txt"
-#f_blast_d2_2u = folderC + "B2A.txt"
-#f_uniprotpep = "F:\\Insects\\uniprotkb_arthropoda"
-#uniqueNoneWithin_c=True,
-#uniqueNoneWithin_d1=True,
-#uniqueNoneWithin_d2=True,
-#coverage=0.7
-#min_length=200
-#f_outfolder = "F:\\Insects\\Anopheles_gambiae\\MCOT2\\"
-#f_protein2gene = f_outfolder +"peptides2gene.txt"
-
+from Bio import SeqIO

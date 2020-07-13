@@ -45,7 +45,9 @@ def getML(df):
     subject_intervals =  [list(e) for e in zip(df['s_start'], df['s_end'])]
     subject_len = countIntervalLen(subject_intervals)
     
-    return min(query_len, subject_len)
+    identity = (df['identity'] * df['alignment_length']).sum() / df['alignment_length'].sum()
+    
+    return min(query_len, subject_len), identity
 
 def getSeqLen(seq_ids, f_seq, remove_star = True):
     '''
@@ -89,17 +91,18 @@ def parseBlast6(f_blast6, f_query, f_subject, min_identity=90, outfile=None):
     df_blast = pd.read_csv(f_blast6, sep='\t', header=None)
     df_blast.columns = 'query_id subject_id identity alignment_length mismatches gap_opens q_start q_end s_start s_end e_value bit_score'.split()
     df_match = df_blast.groupby(by=['query_id','subject_id']).apply(getML)
-    df_match = df_blast.groupby(by=['query_id','subject_id']).apply(getML)
     df_match = df_match.reset_index()
-    df_match.columns = 'seq1_id seq2_id match_len'.split()
+    df_match.columns = 'seq1_id seq2_id temp'.split()
+    df_match['match_len'] = df_match['temp'].str[0]
+    df_match['identity'] = df_match['temp'].str[1]
     seq1_ids = set(df_match['seq1_id'])
     seq2_ids = set(df_match['seq2_id'])
     dc_seq1len = getSeqLen(seq1_ids, f_query)
     dc_seq2len = getSeqLen(seq2_ids, f_subject)
     df_match['seq1_len'] = df_match['seq1_id'].apply(lambda x:dc_seq1len[x])
     df_match['seq2_len'] = df_match['seq2_id'].apply(lambda x:dc_seq2len[x])
-    df_match.head()
-    df_match = df_match['seq1_id seq2_id seq1_len seq2_len match_len'.split()]
+
+    df_match = df_match['seq1_id seq2_id seq1_len seq2_len match_len identity'.split()]
     
     if outfile is not None:
         df_match.to_csv(outfile, sep='\t', index=None)

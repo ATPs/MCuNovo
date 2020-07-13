@@ -5,6 +5,7 @@ Created on Wed Feb  1 13:57:42 2017
 @author: k
 """
 from Bio import SeqIO
+import time
 
 def errorMatch(seq1, seq2, errors=2):
     """
@@ -43,15 +44,11 @@ def errorMatch(seq1, seq2, errors=2):
                 return True
     return False
 
-
-def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
-    """
+def getDicKmernum(myfasta, kmerlen = 6):
+    '''
     myfasta is a list of SeqIO elements
-    if a sequence is part of the other, with error_rate allowed, then remove this sequence.
-    return a list of non-redundant SeqIO fasta
-    """
-    import time
-    time1 = time.time()
+    return a dictionary, with kmer with length of kmerlen as key, and a list of index of sequences with that kmer
+    '''
     dickmernum = {} #kmer dic, kmer with its seqs
     for dummyi in range(len(myfasta)):
         seq = str(myfasta[dummyi].seq)
@@ -60,14 +57,25 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
             if kmernum not in dickmernum:
                 dickmernum[kmernum] = set()
             dickmernum[kmernum].add(dummyi)
-    print(time.time()-time1)
     
     time1 = time.time() #change values of dickmernum to list
     for kmernum in dickmernum:
         dickmernum[kmernum] = list(dickmernum[kmernum])
     print(time.time()-time1)
     
+    return dickmernum
+
+
+def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
+    """
+    myfasta is a list of SeqIO elements
+    if a sequence is part of the other, with error_rate allowed, then remove this sequence.
+    return a list of non-redundant SeqIO fasta
+    """
     time1 = time.time()
+    dickmernum = getDicKmernum(myfasta, kmerlen = kmerlen)
+    print(time.time()-time1)
+    
     toremove = set()
     from collections import Counter
     for num1 in range(len(myfasta)):

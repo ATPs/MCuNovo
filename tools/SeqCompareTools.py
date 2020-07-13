@@ -13,6 +13,7 @@ import io
 from collections import Counter
 import time
 import re
+import gzip
 
 
 
@@ -21,7 +22,10 @@ def openfile2lsFasta(filename,fmt = "fasta", removeStar = True):
     """
     given a file name, return a list of fasta in SeqIO format
     """
-    l = list(SeqIO.parse(open(filename),fmt))
+    if filename.endswith('.gz'):
+        l = list(SeqIO.parse(gzip.open(filename,'rt'),fmt))
+    else:
+        l = list(SeqIO.parse(open(filename),fmt))
     if removeStar:
         for s in l:
             if s.seq[-1] == '*':

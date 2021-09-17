@@ -7,23 +7,23 @@ import numpy as np
 import math
 import fastaFileRemoveDup
 
-pep_m = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190622Rhyzopertha_dominica\Rdo_Scaffolds.all.maker.proteins.fasta"
-pep_c = r"D:\species\genomes\20190622Rhyzopertha_dominica\StringTie\20190625RdoStringTie.fa.transdecoder.pepUN"
-pep_d = r"D:\species\genomes\20190622Rhyzopertha_dominica\denovo\20190624Trinity.fasta.transdecoder.pepUN"
-pep_n = r"D:\species\genomes\20190622Rhyzopertha_dominica\denovo\20190625transabyss.fasta.transdecoder.pepUN"
-pep_u = r"D:\species\uniprot\arthropoda\uniprotkb_arthropodaclean"
-pair_m2c = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2StringTie"
-pair_m2d = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2Trinity"
-pair_m2n = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2TransAbyss"
-pair_m2u = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Maker2U.match"
-pair_c2d = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2Trinity"
-pair_c2n = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2TransAbyss"
-pair_c2u = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2U.match"
-pair_d2u = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Trinity2U.match"
-pair_n2u = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\TransAbyss2U.match"
-protein2transcript2gene = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\protein2transcript2gene.txt"
-X_table = r"D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\proteinXcount.txt"
-outprefix = r'D:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\MCD'
+pep_m = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190622Rhyzopertha_dominica\Rdo_Scaffolds.all.maker.proteins.fasta"
+pep_c = r"G:\species\genomes\20190622Rhyzopertha_dominica\StringTie\20190625RdoStringTie.fa.transdecoder.pepUN"
+pep_d = r"G:\species\genomes\20190622Rhyzopertha_dominica\denovo\20190624Trinity.fasta.transdecoder.pepUN"
+pep_n = r"G:\species\genomes\20190622Rhyzopertha_dominica\denovo\20190625transabyss.fasta.transdecoder.pepUN"
+pep_u = r"G:\species\uniprot\arthropoda\uniprotkb_arthropodaclean"
+pair_m2c = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2StringTie"
+pair_m2d = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2Trinity"
+pair_m2n = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\maker2TransAbyss"
+pair_m2u = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Maker2U.match"
+pair_c2d = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2Trinity"
+pair_c2n = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2TransAbyss"
+pair_c2u = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\StringTie2U.match"
+pair_d2u = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\Trinity2U.match"
+pair_n2u = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\TransAbyss2U.match"
+protein2transcript2gene = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\protein2transcript2gene.txt"
+X_table = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\proteinXcount.txt"
+outprefix = r"G:\species\genomes\20190622Rhyzopertha_dominica\20190714MCuNovo\MCD2"
 CS_coverage = 0.7
 CS_length=200
 MS_min=0.5
@@ -430,7 +430,7 @@ def selector(pep_m, pep_c, pep_d, pep_n, pep_u,
     for seq in ls_seqs_mcdUN:
         if seq.id in ids_novoOnly:#write novo Only sequences
             gene_id = dc_id2name[seq.id]
-            fout.write('>{}.novo\n{}\n'.format(gene_id, str(seq.seq)))
+            fout.write('>{}.novo\tOriginalID:{}\n{}\n'.format(gene_id, seq.id, str(seq.seq)))
             fout2.write('>{}.novo\n{}\n'.format(gene_id, str(seq.seq)))
         else:
             gene_id = dc_id2name[seq.id]
@@ -439,7 +439,7 @@ def selector(pep_m, pep_c, pep_d, pep_n, pep_u,
                 r = tdf.iloc[0]
                 gene_id = gene_id + '.{}{}'.format(r['s_q'], r['s_s'])
                 description = str(r.to_dict())
-                fout.write('>{} {}\n{}\n'.format(gene_id, description, str(seq.seq)))
+                fout.write('>{} {}\tOriginalID:{}\n{}\n'.format(gene_id, description, seq.id, str(seq.seq)))
                 fout2.write('>{}\n{}\n'.format(gene_id, str(seq.seq)))
             else:
                 description = []
@@ -451,14 +451,27 @@ def selector(pep_m, pep_c, pep_d, pep_n, pep_u,
                 select_notes = '.'.join(select_notes)
                 description = '||'.join(description)
                 gene_id = gene_id + '.'+select_notes
-                fout.write('>{} {}\n{}\n'.format(gene_id, description, str(seq.seq)))
+                fout.write('>{} {}\tOriginalID:{}\n{}\n'.format(gene_id, description, seq.id, str(seq.seq)))
                 fout2.write('>{}\n{}\n'.format(gene_id, str(seq.seq)))
     fout.close()
     fout2.close()
 
     
     
-
+selector(pep_m, pep_c, pep_d, pep_n, pep_u,
+             pair_m2c, pair_m2d, pair_m2n, pair_m2u, pair_c2d, pair_c2n, pair_c2u, pair_d2u, pair_n2u,
+             protein2transcript2gene,
+             outprefix = outprefix,
+             X_table = X_table,
+             CS_coverage = 0.7,
+             CS_length=200,
+             MS_min=0.5,
+             MS_factor = 10/3,
+             X_ratio = 0.7,
+             homolog_CSmin = 0.6,
+             mc_extra = 5,
+             error_rate = 0.01
+             )
 
 
 

@@ -31,7 +31,7 @@ def compare2lsSeqs(seqs1, seqs2, identitymin = 20, outfile = None,error_rate = 0
     
     parameters = [[[seqs1[pair[0]], seqs2[pair[1]]], identitymin, error_rate,muscle_exe] for pair in pairs]
     pool = Pool(threads)
-    match_lengths = pool.starmap(getProteinAlignLength,parameters)
+    match_lengths = pool.starmap(getProteinAlignLength,parameters,chunksize=1)
     pool.close()
     
     df = pd.DataFrame()

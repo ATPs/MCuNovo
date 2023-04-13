@@ -6,6 +6,11 @@ Created on Wed Feb  1 13:57:42 2017
 """
 from Bio import SeqIO
 import time
+try:
+    import tqdm
+    tqdm_exist = True
+except:
+    tqdm_exist = False
 
 def errorMatch(seq1, seq2, errors=2):
     """
@@ -55,12 +60,12 @@ def getDicKmernum(myfasta, kmerlen = 6):
         for i in range(len(seq)+1-kmerlen):
             kmernum = seq[i:i+kmerlen]
             if kmernum not in dickmernum:
-                dickmernum[kmernum] = set()
-            dickmernum[kmernum].add(dummyi)
+                dickmernum[kmernum] = []
+            dickmernum[kmernum].append(dummyi)
     
     time1 = time.time() #change values of dickmernum to list
     for kmernum in dickmernum:
-        dickmernum[kmernum] = list(dickmernum[kmernum])
+        dickmernum[kmernum] = list(set(dickmernum[kmernum]))
     print(time.time()-time1)
     
     return dickmernum
@@ -78,7 +83,11 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     
     toremove = set()
     from collections import Counter
-    for num1 in range(len(myfasta)):
+    if tqdm_exist:
+        to_iter = tqdm.tqdm(range(len(myfasta)))
+    else:
+        to_iter = range(len(myfasta))
+    for num1 in to_iter:
         seq1 = str(myfasta[num1].seq)
         seq1kmers = set() # all kmernum, here is kmer5 in seq1
         for i in range(len(seq1)+1-kmerlen):
@@ -121,6 +130,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('filename',help = 'input file name of fasta file')
     parser.add_argument('-e', '--error', default = None, help = 'error rate allowed to determine duplicated sequences, default 0.02')
+    parser.add_argument('-k', '--kmerlen', default = 15, help = 'kmer length used to build a dict for sequences. default: 15', type=int)
     parser.add_argument('-o','--out', default = None, help = 'outfile name. Default, input filename +UN')
     
     f = parser.parse_args()
@@ -135,7 +145,8 @@ if __name__ == '__main__':
     f_input = f.filename
     
     ls = list(SeqIO.parse(f_input,'fasta'))
-    lsu = fasta_within_seq_big_withError(ls,error_rate,6)
+    print('finished reading the fasta file')
+    lsu = fasta_within_seq_big_withError(ls,error_rate,f.kmerlen)
     fout = open(outname,'w')
     for ele in lsu:
         fout.write('>'+ele.description+'\n'+str(ele.seq)+'\n')

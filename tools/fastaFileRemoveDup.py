@@ -98,18 +98,18 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
             seq1targets += dickmernum[kmernum]
         seq1targets = Counter(seq1targets) # count the number of common kmers for each targets
         seq1targets = seq1targets.most_common() # sort the targets based on the number of commn kmers
+        seq1targets = [(k,v) for k,v in seq1targets if k not in toremove]
     #    print(time.time()-time1)
         errors = int(len(seq1)*error_rate)
         for seq2id, seq2_counts in seq1targets:
             if seq2id != num1:
                 seq2 = str(myfasta[seq2id].seq)
-                if seq2_counts >= len(seq1kmers)-errors*kmerlen:
+                if seq2_counts >= len(seq1kmers) - errors * len(seq1):
                     if len(seq1) <= len(seq2):
-                        if seq2id not in toremove:
-                            if seq2_counts >=2:
-                                if errorMatch(seq1,seq2,errors):
-                                    toremove.add(num1)
-                                    break
+                        if seq2_counts >=2:
+                            if errorMatch(seq1,seq2,errors):
+                                toremove.add(num1)
+                                break
     
     print(time.time()-time1)
     print('total removed sequence number is')

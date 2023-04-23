@@ -11,6 +11,11 @@ try:
     tqdm_exist = True
 except:
     tqdm_exist = False
+import gzip
+from collections import Counter
+from multiprocessing import Pool
+import itertools
+from collections import OrderedDict
 
 def errorMatch(seq1, seq2, errors=2):
     """
@@ -49,6 +54,7 @@ def errorMatch(seq1, seq2, errors=2):
                 return True
     return False
 
+
 def getDicKmernum(myfasta, kmerlen = 6):
     '''
     myfasta is a list of SeqIO elements
@@ -63,13 +69,43 @@ def getDicKmernum(myfasta, kmerlen = 6):
                 dickmernum[kmernum] = []
             dickmernum[kmernum].append(dummyi)
     
-    time1 = time.time() #change values of dickmernum to list
     for kmernum in dickmernum:
         dickmernum[kmernum] = list(set(dickmernum[kmernum]))
-    print(time.time()-time1)
     
     return dickmernum
 
+
+def getTargets(myfasta, num1, dc_seqlen, kmerlen):
+    seq1 = str(myfasta[num1].seq)
+    seq1len = dc_seqlen[num1]
+    seq1kmers = set() # all kmernum, here is kmer5 in seq1
+    for i in range(len(seq1)+1-kmerlen):
+        seq1kmers.add(seq1[i:i+kmerlen])
+#    print(time.time()-time1)
+    seq1targets = [i for kmernum in seq1kmers for i in dickmernum[kmernum]]
+    seq1targets = Counter(seq1targets) # count the number of common kmers for each targets
+    seq1targets = seq1targets.most_common() # sort the targets based on the number of commn kmers
+    seq1targets = [(k,v) for k,v in seq1targets if seq1len <= dc_seqlen[k] and (k not in toremove) and (k != num1)]
+
+def fasta_keep_unique(x):
+    ''' myfasta is a list of SeqIO elements
+    return unique sequences only. keep sequences in end of the file if possible
+    '''
+    if isinstance(x, list):
+        myfasta = x
+    elif isinstance(x, str):
+        if x.endswith('.gz'):
+            fo = gzip.open(x,'rt')
+        else:
+            fo = open(x,'r')
+        myfasta = SeqIO.parse(fo,'fasta')
+    dc_seq = OrderedDict()
+    for n,i in enumerate(myfasta):
+        seq = str(i.seq)
+        dc_seq[seq] = i
+
+    print('remove sequences that are identical. number of input sequences: {}, unique sequences: {}'.format(n + 1, len(dc_seq)))
+    return list(dc_seq.values())
 
 def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     """
@@ -77,42 +113,59 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     if a sequence is part of the other, with error_rate allowed, then remove this sequence.
     return a list of non-redundant SeqIO fasta
     """
+    # add dict of seqlen
+    dc_seqlen = {n:len(k.seq) for n,k in enumerate(myfasta)}
+    seqlen_min = min(dc_seqlen.values())
+    if seqlen_min < kmerlen:
+        if seqlen_min >= 6:
+            print('minimum protein length is', seqlen_min, 'change kmerlen to', seqlen_min)
+            kmerlen = seqlen_min
+        else:
+            print('minimum protein length is', seqlen_min, 'change kmerlen to 6')
+            kmerlen = 6
+
     time1 = time.time()
     dickmernum = getDicKmernum(myfasta, kmerlen = kmerlen)
-    print(time.time()-time1)
-    
+    # remove keys with single value to speed up
+    dickmernum = {k:v for k,v in dickmernum.items() if len(v) > 1}
+    print(time.time()-time1) 
+
     toremove = set()
-    from collections import Counter
     if tqdm_exist:
         to_iter = tqdm.tqdm(range(len(myfasta)))
     else:
         to_iter = range(len(myfasta))
     for num1 in to_iter:
         seq1 = str(myfasta[num1].seq)
-        seq1kmers = set() # all kmernum, here is kmer5 in seq1
+        seq1len = dc_seqlen[num1]
+        seq1kmers = [] # all kmernum, here is kmer5 in seq1
         for i in range(len(seq1)+1-kmerlen):
-            seq1kmers.add(seq1[i:i+kmerlen])
+            seq1kmers.append(seq1[i:i+kmerlen])
+        seq1kmers = set(seq1kmers)
+        if error_rate == 0:
+            if any([i not in dickmernum for i in seq1kmers]):
+                continue
     #    print(time.time()-time1)
         seq1targets = []
         for kmernum in seq1kmers:
-            seq1targets += dickmernum[kmernum]
+            if kmernum in dickmernum:
+                seq1targets += list(dickmernum[kmernum])
         seq1targets = Counter(seq1targets) # count the number of common kmers for each targets
         seq1targets = seq1targets.most_common() # sort the targets based on the number of commn kmers
-        seq1targets = [(k,v) for k,v in seq1targets if k not in toremove]
     #    print(time.time()-time1)
         errors = int(len(seq1)*error_rate)
         for seq2id, seq2_counts in seq1targets:
             if seq2id != num1:
-                seq2 = str(myfasta[seq2id].seq)
-                if seq2_counts >= len(seq1kmers) - errors * len(seq1):
-                    if len(seq1) <= len(seq2):
-                        if seq2_counts >=2:
+                if seq1len <= dc_seqlen[seq2id]:
+                    if seq2id not in toremove:
+                        if seq2_counts >= len(seq1kmers) - errors * kmerlen:
+                            seq2 = str(myfasta[seq2id].seq)
                             if errorMatch(seq1,seq2,errors):
                                 toremove.add(num1)
                                 break
     
     print(time.time()-time1)
-    print('total removed sequence number is')
+    print('further removed sequence number is')
     print(len(toremove))
     nonredunfasta =[]
     for i in range(len(myfasta)):
@@ -143,10 +196,10 @@ if __name__ == '__main__':
     else:
         outname = f.out
     f_input = f.filename
-    
-    ls = list(SeqIO.parse(f_input,'fasta'))
-    print('finished reading the fasta file')
-    lsu = fasta_within_seq_big_withError(ls,error_rate,f.kmerlen)
+    myfasta = fasta_keep_unique(f_input)
+    kmerlen = f.kmerlen
+    print('finished reading the fasta file and remove identical sequences')
+    lsu = fasta_within_seq_big_withError(myfasta,error_rate,kmerlen)
     fout = open(outname,'w')
     for ele in lsu:
         fout.write('>'+ele.description+'\n'+str(ele.seq)+'\n')

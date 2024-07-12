@@ -3,6 +3,7 @@
 Created on Wed Feb  1 13:57:42 2017
 
 @author: k
+It is even slower with multiprocessing.Pool if try to generate dickmernum
 """
 from Bio import SeqIO
 import time
@@ -126,6 +127,11 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
 
     time1 = time.time()
     dickmernum = getDicKmernum(myfasta, kmerlen = kmerlen)
+    
+    dickmernum_one_item = {k:v for k,v in dickmernum.items() if len(v) == 1}
+    seq_index_with_unique_kmer = set([i for j in dickmernum_one_item.values() for i in j])
+    if error_rate == 0:
+        print('error_rate is 0, {} sequences with unique kmer and will be kept'.format(len(seq_index_with_unique_kmer)))
     # remove keys with single value to speed up
     dickmernum = {k:v for k,v in dickmernum.items() if len(v) > 1}
     print(time.time()-time1) 
@@ -136,22 +142,19 @@ def fasta_within_seq_big_withError(myfasta, error_rate = 0.02,kmerlen = 6):
     else:
         to_iter = range(len(myfasta))
     for num1 in to_iter:
+        if error_rate == 0:
+            if num1 in seq_index_with_unique_kmer:
+                continue
         seq1 = str(myfasta[num1].seq)
         seq1len = dc_seqlen[num1]
         seq1kmers = [] # all kmernum, here is kmer5 in seq1
         for i in range(len(seq1)+1-kmerlen):
             seq1kmers.append(seq1[i:i+kmerlen])
-        seq1kmers = set(seq1kmers)
-        if error_rate == 0:
-            if any([i not in dickmernum for i in seq1kmers]):
-                continue
+        seq1kmers = set([i for i in seq1kmers if i in dickmernum])
     #    print(time.time()-time1)
-        seq1targets = []
-        for kmernum in seq1kmers:
-            if kmernum in dickmernum:
-                seq1targets += list(dickmernum[kmernum])
+        seq1targets = itertools.chain(*[dickmernum[kmernum] for kmernum in seq1kmers])
         seq1targets = Counter(seq1targets) # count the number of common kmers for each targets
-        seq1targets = seq1targets.most_common() # sort the targets based on the number of commn kmers
+        seq1targets = seq1targets.most_common() # sort the targets based on the number of common kmers
     #    print(time.time()-time1)
         errors = int(len(seq1)*error_rate)
         for seq2id, seq2_counts in seq1targets:
@@ -182,21 +185,22 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('filename',help = 'input file name of fasta file')
-    parser.add_argument('-e', '--error', default = None, help = 'error rate allowed to determine duplicated sequences, default 0.02')
+    parser.add_argument('-e', '--error', default = 0.02, type=float, help = 'error rate allowed to determine duplicated sequences, default 0.02')
     parser.add_argument('-k', '--kmerlen', default = 15, help = 'kmer length used to build a dict for sequences. default: 15', type=int)
     parser.add_argument('-o','--out', default = None, help = 'outfile name. Default, input filename +UN')
+    parser.add_argument('-m','--min', default = 30, type=int, help = 'minimum length of protein sequence. * is also counted')
     
     f = parser.parse_args()
-    if f.error is None:
-        error_rate = 0.02
-    else:
-        error_rate = float(f.error)
+    error_rate = f.error
     if f.out is None:
         outname = f.filename+'UN'
     else:
         outname = f.out
     f_input = f.filename
     myfasta = fasta_keep_unique(f_input)
+    myfasta = sorted(myfasta, key=lambda x: len(x.seq))
+    myfasta = [i for i in myfasta if len(i.seq) >= f.min]
+    print('after removing proteins shorter than {}, {} sequences left'.format(f.min, len(myfasta)))
     kmerlen = f.kmerlen
     print('finished reading the fasta file and remove identical sequences')
     lsu = fasta_within_seq_big_withError(myfasta,error_rate,kmerlen)

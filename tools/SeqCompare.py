@@ -1,6 +1,9 @@
 from multiprocessing import Pool
 import sys
-sys.path.append(__file__)
+try:
+    sys.path.append(__file__)
+except:
+    sys.path.append('.')
 import pandas as pd
 import time
 
@@ -33,6 +36,7 @@ def compare2lsSeqs(seqs1, seqs2, identitymin = 20, outfile = None,error_rate = 0
     pool = Pool(threads)
     match_lengths = pool.starmap(getProteinAlignLength,parameters,chunksize=1)
     pool.close()
+    pool.join()
     
     df = pd.DataFrame()
     df['seq1_id'] = [seqs1[i[0]].id for i in pairs]

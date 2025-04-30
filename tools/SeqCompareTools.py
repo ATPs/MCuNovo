@@ -89,7 +89,12 @@ def getProteinAlignLength(seqs, mincommon = 10, error_rate = 0.02,muscle_exe = r
     with muscleAlignment, then calculate aligned length with proteinAlignLength
     '''
     seqs_aln = muscleAlignment(seqs,muscle_exe = muscle_exe)
-    return proteinAlignLength(seqs_aln, mincommon=mincommon,error_rate= error_rate)
+    try:
+        result = proteinAlignLength(seqs_aln, mincommon=mincommon,error_rate= error_rate)
+    except:
+        print('something wrong with muscle', seqs)
+        result = None
+    return result
 
 def seqs2kmerdic(seqs,kmerlen=20):
     '''

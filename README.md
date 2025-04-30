@@ -4,6 +4,8 @@ Select best protein codeing genes  from models Generated from MAKER2, Cufflinks 
 Cao, X.; Jiang, H. Integrated Modeling of Protein-Coding Genes in the Manduca Sexta Genome Using RNA-Seq Data from the Biochemical Model Insect. Insect Biochemistry and Molecular Biology 2015, 62, 210.
 http://www.sciencedirect.com/science/article/pii/S0965174815000144
 
+Note:
+muscle is required. Muscle must be version 3.x, not the latest 5.x.
 
 ## Download MCuNovo
 
